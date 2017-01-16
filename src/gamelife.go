@@ -87,6 +87,30 @@ func lifeDrawPlaner(currentArray [height][weight]bool, i int, j int, pos int) [h
 	return currentArray
 }
 
+func lifeDrawShip(currentArray [height][weight]bool, i int, j int, pos int) [height][weight]bool {
+	currentArray[chekHeight(i+3)][chekWeight(j+1)] = true
+    currentArray[chekHeight(i+3)][chekWeight(j+2)] = true
+    currentArray[chekHeight(i+3)][chekWeight(j+3)] = true
+
+    var ru, r int
+	switch pos {
+	case 1:
+		ru = -1
+        r = -2
+	default:
+		ru = 1
+        r = 2
+	}
+
+    currentArray[chekHeight(i)][chekWeight(j+2+ru)] = true
+    currentArray[chekHeight(i+1)][chekWeight(j+2+r)] = true
+    currentArray[chekHeight(i+2)][chekWeight(j+4)] = true
+    currentArray[chekHeight(i+2)][chekWeight(j)] = true
+    currentArray[chekHeight(i+3)][chekWeight(j+2+r)] = true
+
+	return currentArray
+}
+
 func chekHeight(i int) int {
 	var newI int
 
@@ -146,10 +170,11 @@ func main() {
 
 	currentArray := [height][weight]bool{}
 
-	currentArray = lifeDrawLine(currentArray, 10, 17)
-	currentArray = lifeDrawPlaner(currentArray, 10, 21, 0)
-	currentArray = lifeDrawPlaner(currentArray, 19, 80, 1)
-	currentArray = lifeDrawPlaner(currentArray, 10, 50, 1)
+	currentArray = lifeDrawLine(currentArray, height/2 - 1, weight/2 + 10)
+	currentArray = lifeDrawPlaner(currentArray, 20, 15, 0)
+	//currentArray = lifeDrawPlaner(currentArray, 10, 50, 1)
+    	currentArray = lifeDrawShip(currentArray, 0, 0, 0)
+   	 currentArray = lifeDrawShip(currentArray, 15, 0, 1)
 
 	for {
 		print(arrayToString(currentArray))
