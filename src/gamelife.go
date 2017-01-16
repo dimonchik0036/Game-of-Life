@@ -1,8 +1,7 @@
 package main
 
 import (
-	"os"
-	"os/exec"
+	"bytes"
 	"time"
 )
 
@@ -12,31 +11,8 @@ const height = 25
 const newLife = 3
 const life = 2
 
-func clear() {
-	cmd := exec.Command("cmd", "/c", "cls")
-	cmd.Stdout = os.Stdout
-	cmd.Run()
-}
-
-func printArray(Array [height][weight]int) {
-	for i := -1; i <= height; i++ {
-		for j := -1; j <= weight; j++ {
-			if i == -1 || i == height || j == -1 || j == weight {
-				print("#")
-			} else {
-				if Array[i][j] == 1 {
-					print("О")
-				} else {
-					print(".")
-				}
-			}
-		}
-		println()
-	}
-}
-
-func nextArray(currentArray [height][weight]int) [height][weight]int {
-	var nextArray [height][weight]int
+func nextArray(currentArray [height][weight]bool) [height][weight]bool {
+	var nextArray [height][weight]bool
 	var count, newu, newl int
 
 	for i := 0; i < height; i++ {
@@ -65,20 +41,20 @@ func nextArray(currentArray [height][weight]int) [height][weight]int {
 							newl -= weight
 						}
 
-						if currentArray[i+u+newu][j+l+newl] == 1 {
+						if currentArray[i+u+newu][j+l+newl] == true {
 							count++
 						}
 					}
 				}
 			}
 
-			if (currentArray[i][j] == 0) && (count == newLife) {
-				nextArray[i][j] = 1
+			if (currentArray[i][j] == false) && (count == newLife) {
+				nextArray[i][j] = true
 			} else {
-				if (currentArray[i][j] == 1) && (count == newLife || count == life) {
-					nextArray[i][j] = 1
+				if (currentArray[i][j] == true) && (count == newLife || count == life) {
+					nextArray[i][j] = true
 				} else {
-					nextArray[i][j] = 0
+					nextArray[i][j] = false
 				}
 			}
 		}
@@ -87,20 +63,26 @@ func nextArray(currentArray [height][weight]int) [height][weight]int {
 	return nextArray
 }
 
-func lifeDrawLine(currentArray [height][weight]int, i int, j int) [height][weight]int {
-	currentArray[chekHeight(i)][chekWeight(j)] = 1
-	currentArray[chekHeight(i)][chekWeight(j-1)] = 1
-	currentArray[chekHeight(i)][chekWeight(j+1)] = 1
+func lifeDrawLine(currentArray [height][weight]bool, i int, j int) [height][weight]bool {
+	currentArray[chekHeight(i)][chekWeight(j)] = true
+	currentArray[chekHeight(i)][chekWeight(j-1)] = true
+	currentArray[chekHeight(i)][chekWeight(j+1)] = true
 
 	return currentArray
 }
 
-func lifeDrawPlaner(currentArray [height][weight]int, i int, j int) [height][weight]int {
-	currentArray[chekHeight(i+1)][chekWeight(j-1)] = 1
-	currentArray[chekHeight(i+1)][chekWeight(j)] = 1
-	currentArray[chekHeight(i+1)][chekWeight(j+1)] = 1
-	currentArray[chekHeight(i)][chekWeight(j+1)] = 1
-	currentArray[chekHeight(i-1)][chekWeight(j)] = 1
+func lifeDrawPlaner(currentArray [height][weight]bool, i int, j int, pos int) [height][weight]bool {
+	currentArray[chekHeight(i+1)][chekWeight(j-1)] = true
+	currentArray[chekHeight(i+1)][chekWeight(j)] = true
+	currentArray[chekHeight(i+1)][chekWeight(j+1)] = true
+	currentArray[chekHeight(i-1)][chekWeight(j)] = true
+
+	switch pos {
+	case 1:
+		currentArray[chekHeight(i)][chekWeight(j-1)] = true
+	default:
+		currentArray[chekHeight(i)][chekWeight(j+1)] = true
+	}
 
 	return currentArray
 }
@@ -133,20 +115,46 @@ func chekWeight(j int) int {
 	return j + newJ
 }
 
-func main() {
-	clear()
+func arrayToString(array [height][weight]bool) string {
+	var buffer bytes.Buffer
 
-	currentArray := [height][weight]int{}
+	for i := 0; i < 100; i++ {
+		buffer.WriteByte('\n')
+	}
+
+	for i := -1; i <= height; i++ {
+		for j := -1; j <= weight; j++ {
+			b := byte(' ')
+
+			if i == -1 || i == height || j == -1 || j == weight {
+				b = '@'
+			} else {
+				if array[i][j] == true {
+					b = '*'
+				}
+			}
+
+			buffer.WriteByte(b)
+		}
+		buffer.WriteByte('\n')
+	}
+
+	return buffer.String()
+}
+
+func main() {
+
+	currentArray := [height][weight]bool{}
 
 	currentArray = lifeDrawLine(currentArray, 10, 17)
-	currentArray = lifeDrawPlaner(currentArray, 10, 21)
-
-	printArray(currentArray)
+	currentArray = lifeDrawPlaner(currentArray, 10, 21, 0)
+	currentArray = lifeDrawPlaner(currentArray, 19, 80, 1)
+	currentArray = lifeDrawPlaner(currentArray, 10, 50, 1)
 
 	for {
-		time.Sleep(40 * time.Millisecond)
-		clear()
+		print(arrayToString(currentArray))
+
 		currentArray = nextArray(currentArray)
-		printArray(currentArray)
+		time.Sleep(70 * time.Millisecond)
 	}
 }
