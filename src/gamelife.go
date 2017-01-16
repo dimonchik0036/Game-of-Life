@@ -21,15 +21,15 @@ func clear() {
 func printArray(Array [height][weight]int) {
 	for i := -1; i <= height; i++ {
 		for j := -1; j <= weight; j++ {
-            if i == -1 || i == height || j == -1 || j == weight {
-                print("#")
-            } else {
-                if Array[i][j] == 1 {
-                    print("О")
-                } else {
-                    print(".")
-                }
-            }
+			if i == -1 || i == height || j == -1 || j == weight {
+				print("#")
+			} else {
+				if Array[i][j] == 1 {
+					print("О")
+				} else {
+					print(".")
+				}
+			}
 		}
 		println()
 	}
@@ -45,42 +45,42 @@ func nextArray(currentArray [height][weight]int) [height][weight]int {
 
 			for l := -1; l <= 1; l++ {
 				for u := -1; u <= 1; u++ {
-                    if (l != 0) || (u != 0) {
-                        newl = 0
-                        newu = 0
-                        
-                        if i+u < 0 {
-                            newu += height
-                        }
+					if (l != 0) || (u != 0) {
+						newl = 0
+						newu = 0
 
-                        if i+u >= height {
-                            newu -= height
-                        }
+						if i+u < 0 {
+							newu += height
+						}
 
-                        if j+l < 0 {
-                            newl += weight
-                        }
+						if i+u >= height {
+							newu -= height
+						}
 
-                        if j+l >= weight {
-                            newl -= weight
-                        }
+						if j+l < 0 {
+							newl += weight
+						}
 
-                        if currentArray[i+u+newu][j+l+newl] == 1 {
-                            count++
+						if j+l >= weight {
+							newl -= weight
+						}
+
+						if currentArray[i+u+newu][j+l+newl] == 1 {
+							count++
 						}
 					}
 				}
 			}
 
-            if (currentArray[i][j] == 0) && (count == newLife) {
-                nextArray[i][j] = 1
-            } else {
-                if (currentArray[i][j] == 1) && (count == newLife || count == life) {
-                    nextArray[i][j] = 1
-                } else {
-                    nextArray[i][j] = 0      
-                }
-            }
+			if (currentArray[i][j] == 0) && (count == newLife) {
+				nextArray[i][j] = 1
+			} else {
+				if (currentArray[i][j] == 1) && (count == newLife || count == life) {
+					nextArray[i][j] = 1
+				} else {
+					nextArray[i][j] = 0
+				}
+			}
 		}
 	}
 
@@ -88,50 +88,49 @@ func nextArray(currentArray [height][weight]int) [height][weight]int {
 }
 
 func lifeDrawLine(currentArray [height][weight]int, i int, j int) [height][weight]int {
-    currentArray[chekHeight(i)][chekWeight(j)] = 1
-    currentArray[chekHeight(i)][chekWeight(j-1)] = 1
-    currentArray[chekHeight(i)][chekWeight(j+1)] = 1
+	currentArray[chekHeight(i)][chekWeight(j)] = 1
+	currentArray[chekHeight(i)][chekWeight(j-1)] = 1
+	currentArray[chekHeight(i)][chekWeight(j+1)] = 1
 
-    return currentArray
+	return currentArray
 }
 
 func lifeDrawPlaner(currentArray [height][weight]int, i int, j int) [height][weight]int {
-    currentArray[chekHeight(i + 1)][chekWeight(j-1)] = 1
-    currentArray[chekHeight(i + 1)][chekWeight(j)] = 1
-    currentArray[chekHeight(i+1)][chekWeight(j+1)] = 1
-    currentArray[chekHeight(i)][chekWeight(j+1)] = 1
-    currentArray[chekHeight(i - 1)][chekWeight(j)] = 1
+	currentArray[chekHeight(i+1)][chekWeight(j-1)] = 1
+	currentArray[chekHeight(i+1)][chekWeight(j)] = 1
+	currentArray[chekHeight(i+1)][chekWeight(j+1)] = 1
+	currentArray[chekHeight(i)][chekWeight(j+1)] = 1
+	currentArray[chekHeight(i-1)][chekWeight(j)] = 1
 
-    return currentArray
+	return currentArray
 }
 
 func chekHeight(i int) int {
-     var newI int
-    
-    for i + newI < 0 {
-        newI += height
-    }
-    
+	var newI int
 
-    for i + newI >= height {
-        newI -= height
-    }
+	for i+newI < 0 {
+		newI += height
+	}
 
-    return i + newI
+	for i+newI >= height {
+		newI -= height
+	}
+
+	return i + newI
 }
 
 func chekWeight(j int) int {
-    var newJ int
+	var newJ int
 
-    for j + newJ < 0 {
-        newJ += weight
-    }
+	for j+newJ < 0 {
+		newJ += weight
+	}
 
-    for j + newJ >= weight {
-        newJ -= weight
-    }
+	for j+newJ >= weight {
+		newJ -= weight
+	}
 
-    return j + newJ
+	return j + newJ
 }
 
 func main() {
@@ -139,15 +138,15 @@ func main() {
 
 	currentArray := [height][weight]int{}
 
-    currentArray = lifeDrawLine(currentArray, 10, 17)
-    currentArray = lifeDrawPlaner(currentArray, 10, 21)
+	currentArray = lifeDrawLine(currentArray, 10, 17)
+	currentArray = lifeDrawPlaner(currentArray, 10, 21)
 
 	printArray(currentArray)
 
 	for {
-        time.Sleep(40 * time.Millisecond)
+		time.Sleep(40 * time.Millisecond)
 		clear()
-        currentArray = nextArray(currentArray)
+		currentArray = nextArray(currentArray)
 		printArray(currentArray)
 	}
 }
